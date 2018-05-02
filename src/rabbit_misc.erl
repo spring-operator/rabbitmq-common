@@ -228,9 +228,7 @@
 -spec ntoa(inet:ip_address()) -> string().
 -spec ntoab(inet:ip_address()) -> string().
 -spec is_process_alive(pid()) -> boolean().
--spec pget(term(), [term()]) -> term().
--spec pget(term(), [term()], term()) -> term().
--spec pget_or_die(term(), [term()]) -> term() | no_return().
+
 -spec pmerge(term(), term(), [term()]) -> [term()].
 -spec plmerge([term()], [term()]) -> [term()].
 -spec pset(term(), term(), [term()]) -> [term()].
@@ -883,6 +881,15 @@ is_process_alive(Pid) ->
     lists:member(Node, [node() | nodes(connected)]) andalso
         rpc:call(Node, erlang, is_process_alive, [Pid]) =:= true.
 
+-spec pget(term(), list() | map()) -> term().
+pget(K, M) when is_map(M) ->
+    case maps:find(K, M) of
+        {ok, V} ->
+            V;
+        _ ->
+            undefined
+    end;
+
 pget(K, P) ->
     case lists:keyfind(K, 1, P) of
         {K, V} ->
@@ -890,6 +897,16 @@ pget(K, P) ->
         _ ->
             undefined
     end.
+
+-spec pget(term(), list() | map(), term()) -> term().
+pget(K, M, D) when is_map(M) ->
+    case maps:find(K, M) of
+        {ok, V} ->
+            V;
+        _ ->
+            D
+    end;
+
 pget(K, P, D) ->
     case lists:keyfind(K, 1, P) of
         {K, V} ->
@@ -897,6 +914,13 @@ pget(K, P, D) ->
         _ ->
             D
     end.
+
+-spec pget_or_die(term(), list() | map()) -> term() | no_return().
+pget_or_die(K, M) when is_map(M) ->
+    case maps:find(K, M) of
+        error   -> exit({error, key_missing, K});
+        {ok, V} -> V
+    end;
 
 pget_or_die(K, P) ->
     case proplists:get_value(K, P) of
