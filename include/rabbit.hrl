@@ -148,11 +148,9 @@
 -record(exchange_serial, {name, next}).
 
 %% mnesia doesn't like unary records, so we add a dummy 'value' field
--record(route, {binding, value = const}).
--record(reverse_route, {reverse_binding, value = const}).
+-record(route, {binding, source, destination, key}).
 
 -record(binding, {source, key, destination, args = []}).
--record(reverse_binding, {destination, key, source, args = []}).
 
 -record(topic_trie_node, {trie_node, edge_count, binding_count}).
 -record(topic_trie_edge, {trie_edge, node_id}).
