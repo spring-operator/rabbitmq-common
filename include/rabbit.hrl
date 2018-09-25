@@ -148,7 +148,7 @@
 -record(exchange_serial, {name, next}).
 
 %% mnesia doesn't like unary records, so we add a dummy 'value' field
--record(route, {binding, source, destination, key}).
+-record(route, {binding, source, destination, source_key}).
 
 -record(binding, {source, key, destination, args = []}).
 
